@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>모바일 통이미지 페이지</title>
-  <!-- 선택: 이미지가 클 경우 미리 불러오면 초기 로딩이 살짝 빨라집니다 -->
+  <!-- 이미지 미리 불러오기 -->
   <link rel="preload" as="image" href="content5.png"/>
 
   <style>
@@ -29,12 +29,68 @@
     }
     /* 아주 긴 이미지에서 스크롤 바운스 방지 살짝 */
     ::-webkit-scrollbar { width: 0; height: 0; }
+
+    /* 스크롤 하단 근처 확대 효과를 위한 전환 */
+    img#hero {
+      transition: transform 220ms ease, filter 220ms ease;
+      will-change: transform;
+    }
+
+    /* (선택) 앵커 이동 시 부드러운 스크롤 */
+    html { scroll-behavior: smooth; }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <!-- 파일명만 실제 업로드한 이름과 똑같이! (예: content.webp / long.jpg 등) -->
-    <img src="content5.png" alt="이벤트/콘텐츠 전체 이미지" loading="eager" />
+    <!-- 파일명은 실제 업로드한 이름과 동일해야 합니다 -->
+    <img id="hero" src="content5.png" alt="이벤트/콘텐츠 전체 이미지" loading="eager" />
   </main>
+
+  <script>
+  (() => {
+    const img = document.getElementById('hero');
+    if (!img) return;
+
+    // 접근성: 모션 최소화 환경이면 효과 비활성화
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    const MAX_SCALE = 1.03;     // 끝에서 최대 확대 비율 (1.01~1.03 권장)
+    const TRIGGER_START = 0.80; // 문서 하단의 20% 지점부터 효과 시작
+
+    let ticking = false;
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollTop = window.scrollY || window.pageYOffset;
+        const doc = document.documentElement;
+        const docHeight = doc.scrollHeight;
+        const winHeight = window.innerHeight;
+        const progress = (scrollTop + winHeight) / docHeight; // 0~1 (바닥에 가까울수록 1)
+
+        if (progress >= TRIGGER_START) {
+          // 0~1로 정규화
+          const t = Math.min(1, (progress - TRIGGER_START) / (1 - TRIGGER_START));
+          // easeInOut 곡선
+          const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+          const scale = 1 + (MAX_SCALE - 1) * eased;
+          img.style.transform = 'scale(' + scale + ')';
+          // 선택: 대비 살짝 증가로 초점 강조 (원치 않으면 아래 줄 삭제)
+          img.style.filter = 'contrast(' + (1 + 0.04*eased) + ')';
+        } else {
+          img.style.transform = 'scale(1)';
+          img.style.filter = 'none';
+        }
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+  })();
+  </script>
 </body>
 </html>
