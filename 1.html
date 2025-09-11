@@ -1,109 +1,56 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>모바일 통이미지 페이지</title>
-  <link rel="preload" as="image" href="event923.jpg"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>모바일 통이미지 페이지</title>
+<link rel="preload" as="image" href="event923.jpg" />
 
-  <style>
-    html, body { margin:0; padding:0; }
-    body {
-      background:#fff;
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
-    }
-    .wrap {
-      max-width: 768px;
-      margin: 0 auto;
-      position: relative; /* 클릭 박스 기준 */
-    }
-    img {
-      display:block;
-      width:100%;
-      height:auto;
-      user-select:none;
-      -webkit-user-drag:none;
-      touch-action:manipulation;
-      transition: height 200ms ease;
-    }
+<style>
+  html,body{margin:0;padding:0}
+  body{background:#fff;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  .wrap{
+    position:relative;
+    max-width:768px;
+    margin:0 auto;
+    /* 이미지 원본 비율: 352 x 2048 */
+    aspect-ratio: 352 / 2048;     /* 컨테이너 높이를 비율로 고정 */
+    overflow:hidden;
+  }
+  /* 이미지를 컨테이너에 꽉 채우기 */
+  .wrap > img{
+    position:absolute; inset:0;
+    width:100%; height:100%; object-fit:cover;
+    z-index:1; user-select:none; -webkit-user-drag:none;
+  }
 
-    /* 공통 클릭 박스 */
-    .click-box {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70%;          /* 버튼 너비 */
-      height: 90px;         /* 버튼 높이 */
-      cursor: pointer;
-      /* 디버깅용 시각화 */
-      /* background: rgba(255,0,0,0.3); */
-    }
+  /* 공통 클릭박스 (이미지 위 레이어) */
+  .hit{
+    position:absolute; left:8%; width:84%;
+    z-index:2; cursor:pointer; display:block;
+    /* 확인용 가이드 -> 필요시 주석 해제해서 위치 확인 */
+    /* background: rgba(0,128,255,.25); */
+    border-radius:10px;
+  }
 
-    /* 개별 버튼 위치 */
-    .btn1 { top: 62.2%; } /* 상단 - 플레이스토어 구독 설정 */
-    .btn2 { top: 67.3%; } /* 상단 - 계좌 정보 등록 */
-    .btn3 { top: 89.1%; } /* 하단 - 플레이스토어 구독 설정 */
-    .btn4 { top: 94.1%; } /* 하단 - 계좌 정보 등록 */
-
-    ::-webkit-scrollbar { width: 0; height: 0; }
-    html { scroll-behavior: smooth; }
-  </style>
+  /* ===== 퍼센트 좌표 (원본 2048px 기준) =====
+     top% = y / 2048 * 100
+     height% = h / 2048 * 100 (h=70px → 3.41796875%)
+  */
+  .btn1{ top:42.96875%; height:3.41796875%; } /* 상단 - 플레이스토어 구독 설정 */
+  .btn2{ top:47.8515625%; height:3.41796875%; }/* 상단 - 계좌 정보 등록 */
+  .btn3{ top:83.0078125%; height:3.41796875%; }/* 하단 - 플레이스토어 구독 설정 */
+  .btn4{ top:88.134765625%; height:3.41796875%; }/* 하단 - 계좌 정보 등록 */
+</style>
 </head>
 <body>
   <main class="wrap">
-    <!-- 메인 이미지 -->
-    <img id="hero" src="event923.jpg" alt="이벤트 이미지" loading="eager" />
-
-    <!-- 클릭 박스 4개 -->
-    <a href="https://example.com/link1" class="click-box btn1" target="_blank"></a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeC5rSYb6hcLkRx8U843-BNuUQh4xyXV3vqBnJ028MI34pmhQ/viewform?usp=header" class="click-box btn2" target="_blank"></a>
-    <a href="https://example.com/link3" class="click-box btn3" target="_blank"></a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeC5rSYb6hcLkRx8U843-BNuUQh4xyXV3vqBnJ028MI34pmhQ/viewform?usp=header" class="click-box btn4" target="_blank"></a>
+    <img src="event923.jpg" alt="이벤트 전체 이미지" />
+    <!-- 링크만 실제 주소로 교체 -->
+    <a class="hit btn1" href="LINK_1" target="_blank" aria-label="플레이스토어 구독 설정(상단)"></a>
+    <a class="hit btn2" href="LINK_2" target="_blank" aria-label="계좌 정보 등록(상단)"></a>
+    <a class="hit btn3" href="LINK_3" target="_blank" aria-label="플레이스토어 구독 설정(하단)"></a>
+    <a class="hit btn4" href="LINK_4" target="_blank" aria-label="계좌 정보 등록(하단)"></a>
   </main>
-
-  <script>
-  (() => {
-    const img = document.getElementById('hero');
-    if (!img) return;
-
-    const MAX_SCALE_Y = 1.03;     // 끝에서 최대 세로 늘림 비율
-    const TRIGGER_START = 0.80;   // 문서 하단의 20% 지점부터 효과 시작
-
-    let baseHeight = null;
-
-    img.addEventListener("load", () => {
-      baseHeight = img.naturalHeight / (img.naturalWidth / img.offsetWidth);
-    });
-
-    let ticking = false;
-    function onScroll() {
-      if (!baseHeight) return;
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const scrollTop = window.scrollY || window.pageYOffset;
-        const doc = document.documentElement;
-        const docHeight = doc.scrollHeight;
-        const winHeight = window.innerHeight;
-        const progress = (scrollTop + winHeight) / docHeight;
-
-        if (progress >= TRIGGER_START) {
-          const t = Math.min(1, (progress - TRIGGER_START) / (1 - TRIGGER_START));
-          const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
-          const scaleY = 1 + (MAX_SCALE_Y - 1) * eased;
-          img.style.height = (baseHeight * scaleY) + "px";
-        } else {
-          img.style.height = baseHeight + "px";
-        }
-        ticking = false;
-      });
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    onScroll();
-  })();
-  </script>
 </body>
 </html>
