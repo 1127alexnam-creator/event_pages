@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>모바일 통이미지 페이지</title>
+  <link rel="preload" as="image" href="content14.png"/>
+
+  <style>
+    html, body { margin:0; padding:0; }
+    body {
+      background:#fff;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    .wrap {
+      max-width: 768px;
+      margin: 0 auto;
+    }
+    img {
+      display:block;
+      width:100%;
+      height:auto;
+      user-select:none;
+      -webkit-user-drag:none;
+      touch-action:manipulation;
+      transition: height 200ms ease;
+    }
+    ::-webkit-scrollbar { width: 0; height: 0; }
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <img id="hero" src="content14.png" alt="이벤트/콘텐츠 전체 이미지" loading="eager" />
+  </main>
+
+  <script>
+  (() => {
+    const img = document.getElementById('hero');
+    if (!img) return;
+
+    const MAX_SCALE_Y = 1.03;     // 끝에서 최대 세로 늘림 비율
+    const TRIGGER_START = 0.80;   // 문서 하단의 20% 지점부터 효과 시작
+
+    let baseHeight = null;
+
+    img.addEventListener("load", () => {
+      baseHeight = img.naturalHeight / (img.naturalWidth / img.offsetWidth);
+    });
+
+    let ticking = false;
+    function onScroll() {
+      if (!baseHeight) return; // 이미지 로딩 전이면 패스
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollTop = window.scrollY || window.pageYOffset;
+        const doc = document.documentElement;
+        const docHeight = doc.scrollHeight;
+        const winHeight = window.innerHeight;
+        const progress = (scrollTop + winHeight) / docHeight;
+
+        if (progress >= TRIGGER_START) {
+          const t = Math.min(1, (progress - TRIGGER_START) / (1 - TRIGGER_START));
+          const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+          const scaleY = 1 + (MAX_SCALE_Y - 1) * eased;
+          img.style.height = (baseHeight * scaleY) + "px";
+        } else {
+          img.style.height = baseHeight + "px";
+        }
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+  })();
+  </script>
+</body>
+</html>
