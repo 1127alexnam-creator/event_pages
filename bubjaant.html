@@ -78,5 +78,33 @@
     onScroll();
   })();
   </script>
+    <!-- 🔥 하단 플로팅 버튼 -->
+  <style>
+    .floating-btn {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      max-width: 768px;
+      margin: 0 auto;
+      z-index: 9999;
+      text-align: center;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
+    }
+    .floating-btn img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    @media (min-width: 769px) {
+      .floating-btn { left: 50%; transform: translateX(-50%); }
+    }
+  </style>
+
+  <div class="floating-btn">
+    <a href="https://example.com" target="_blank">
+      <img src="버튼이미지.png" alt="하단 버튼">
+    </a>
+  </div>
 </body>
 </html>
