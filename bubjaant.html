@@ -1,110 +1,101 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>모바일 통이미지 페이지</title>
-  <link rel="preload" as="image" href="부자티비에이전트홍보.jpg"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>모바일 통이미지 페이지</title>
+<link rel="preload" as="image" href="부자티비에이전트홍보.jpg"/>
+<style>
+html, body { margin:0; padding:0; }
+body {
+background:#fff;
+-webkit-font-smoothing:antialiased;
+text-rendering:optimizeLegibility;
+}
+.wrap { max-width: 768px; margin: 0 auto; }
+img {
+display:block;
+width:100%;
+height:auto;
+user-select:none;
+-webkit-user-drag:none;
+touch-action:manipulation;
+transition: height 200ms ease;
+}
+::-webkit-scrollbar { width: 0; height: 0; }
+html { scroll-behavior: smooth; }
 
-  <style>
-    html, body { margin:0; padding:0; }
-    body {
-      background:#fff;
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
-    }
-    .wrap {
-      max-width: 768px;
-      margin: 0 auto;
-    }
-    img {
-      display:block;
-      width:100%;
-      height:auto;
-      user-select:none;
-      -webkit-user-drag:none;
-      touch-action:manipulation;
-      transition: height 200ms ease;
-    }
-    ::-webkit-scrollbar { width: 0; height: 0; }
-    html { scroll-behavior: smooth; }
-  </style>
+
+/* ===== 플로팅 버튼 ===== */
+.floating-btn {
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+width: calc(100% - 40px);
+max-width: 720px;
+background: #ff0050;
+color: #fff;
+padding: 15px 0;
+text-align: center;
+border-radius: 12px;
+font-size: 18px;
+font-weight: 700;
+box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+z-index: 9999;
+text-decoration: none;
+letter-spacing: -0.2px;
+}
+.floating-btn:active {
+opacity: 0.8;
+}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <img id="hero" src="부자티비에이전트홍보.jpg" alt="이벤트/콘텐츠 전체 이미지" loading="eager" />
-  </main>
 
-  <script>
-  (() => {
-    const img = document.getElementById('hero');
-    if (!img) return;
 
-    const MAX_SCALE_Y = 1.03;     // 끝에서 최대 세로 늘림 비율
-    const TRIGGER_START = 0.80;   // 문서 하단의 20% 지점부터 효과 시작
+<main class="wrap">
+<img id="hero" src="부자티비에이전트홍보.jpg" alt="이벤트/콘텐츠 전체 이미지" loading="eager" />
+</main>
 
-    let baseHeight = null;
 
-    img.addEventListener("load", () => {
-      baseHeight = img.naturalHeight / (img.naturalWidth / img.offsetWidth);
-    });
+<!-- ===== 플로팅 버튼 HTML ===== -->
+<a href="#" class="floating-btn">무료 상담 신청하기</a>
 
-    let ticking = false;
-    function onScroll() {
-      if (!baseHeight) return; // 이미지 로딩 전이면 패스
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const scrollTop = window.scrollY || window.pageYOffset;
-        const doc = document.documentElement;
-        const docHeight = doc.scrollHeight;
-        const winHeight = window.innerHeight;
-        const progress = (scrollTop + winHeight) / docHeight;
 
-        if (progress >= TRIGGER_START) {
-          const t = Math.min(1, (progress - TRIGGER_START) / (1 - TRIGGER_START));
-          const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
-          const scaleY = 1 + (MAX_SCALE_Y - 1) * eased;
-          img.style.height = (baseHeight * scaleY) + "px";
-        } else {
-          img.style.height = baseHeight + "px";
-        }
-        ticking = false;
-      });
-    }
+<script>
+(() => {
+const img = document.getElementById('hero');
+if (!img) return;
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    onScroll();
-  })();
-  </script>
-    <!-- 🔥 하단 플로팅 버튼 -->
-  <style>
-    .floating-btn {
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      max-width: 768px;
-      margin: 0 auto;
-      z-index: 9999;
-      text-align: center;
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
-    }
-    .floating-btn img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    @media (min-width: 769px) {
-      .floating-btn { left: 50%; transform: translateX(-50%); }
-    }
-  </style>
 
-  <div class="floating-btn">
-    <a href="https://thinkpool.onelink.me/fY6D/tpmob" target="_blank">
-      <img src="버튼이미지.png" alt="하단 버튼">
-    </a>
-  </div>
-</body>
-</html>
+const MAX_SCALE_Y = 1.03; // 끝에서 최대 세로 늘림 비율
+const TRIGGER_START = 0.80; // 문서 하단의 20% 지점부터 효과 시작
+
+
+let baseHeight = null;
+
+
+img.addEventListener("load", () => {
+baseHeight = img.naturalHeight / (img.naturalWidth / img.offsetWidth);
+});
+
+
+let ticking = false;
+
+
+function onScroll() {
+if (!baseHeight) return;
+if (ticking) return;
+ticking = true;
+
+
+requestAnimationFrame(() => {
+const scrollTop = window.scrollY || window.pageYOffset;
+const doc = document.documentElement;
+const docHeight = doc.scrollHeight;
+const winHeight = window.innerHeight;
+
+
+const progress = (scrollTop + winHeight) / docHeight;
+
