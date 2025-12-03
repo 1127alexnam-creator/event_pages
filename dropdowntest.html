@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>풀 선택 드롭다운 + Drag</title>
+<style>
+body {
+  font-family: "Pretendard", "Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background:#fff;
+  padding:40px;
+}
+
+/* 카드 전체 */
+.dropdown-wrap {
+  width: 980px;
+  max-width: 100%;
+  border:1px solid #e5e8ef;
+  border-radius:10px;
+  padding:12px 16px;
+  background:#ffffff;
+  box-sizing:border-box;
+}
+
+/* 상단 선택 영역 (접힘/펼침 토글) */
+.dropdown-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+  font-size:15px;
+  color:#111827;
+}
+
+/* 선택된 풀 텍스트 */
+.dropdown-title {
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* 화살표 */
+.arrow {
+  width:20px;
+  height:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.arrow::before {
+  content:"";
+  border-style:solid;
+  border-width:6px 4px 0 4px;
+  border-color:#9ca3af transparent transparent transparent;
+  display:block;
+  transition:transform .2s ease;
+}
+.arrow.open::before {
+  transform:rotate(180deg);
+}
+
+/* 리스트 영역 */
+.dropdown-list {
+  margin-top:8px;
+  border-top:1px solid #edf0f5;
+  padding-top:8px;
+  display:none;
+}
+.dropdown-list.open {
+  display:block;
+}
+
+/* 개별 아이템 (드래그 타겟) */
+.list-item {
+  position:relative;
+  margin:1px 0;
+  padding:0 4px;         /* 양옆 여백만, radius는 안 줌 */
+  cursor:grab;
+}
+
+/* 실제 배경/라운드는 안쪽 div에만 */
+.list-item-inner {
+  padding:8px 10px;
+  border-radius:6px;   /* 스샷처럼 둥근 캡슐 느낌 */
+  transition:background-color .15s ease;
+  font-size:15px;
+  color:#111827;
+}
+
+/* 보조 텍스트 색 (예: "- 100종목")에 쓰고 싶으면 span으로 감싸면 됨 */
+.list-item-inner span.sub {
+  color:#6b7280;
+}
+
+/* 호버 */
+.list-item:hover .list-item-inner {
+  background:#f3f8ff;
+}
+
+/* 드래그 중인 아이템 */
+.list-item.dragging .list-item-inner {
+  opacity:0.5;
+}
+
+/* 선택된 아이템 (예: 7번 라인) */
+.list-item.selected .list-item-inner {
+  background:#eaf6ff;
+}
+
+/* 🔵 드롭 위치 표시 – 완전 직선 파란 가이드라인 */
+.list-item.drop-target::before {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:2px;
+  background:#2563eb;
+}
+
+/* 하단 요약 정보 */
+.footer {
+  display:flex;
+  gap:24px;
+  margin-top:12px;
+  font-size:13px;
+  color:#6b7280;
+  user-select:none;
+}
+.footer b {
+  font-weight:600;
+}
+.footer .value {
+  color:#2563eb;
+  font-weight:600;
+  margin-left:4px;
+}
+</style>
+</head>
+<body>
+
+<div class="dropdown-wrap">
+
+  <!-- 상단 선택 영역 -->
+  <div class="dropdown-header" id="toggle">
+    <div class="dropdown-title" id="selectedText">
+      1. 기본 종목 풀 - 0종목
+    </div>
+    <div class="arrow" id="arrow"></div>
+  </div>
+
+  <!-- 펼쳐지는 리스트 -->
+  <div class="dropdown-list" id="list">
+
+    <div class="list-item" draggable="true" data-label="1. 기본 종목 풀 - 0종목">
+      <div class="list-item-inner">1. 기본 종목 풀 - <span class="sub">0종목</span></div>
+    </div>
+
+    <div class="list-item" draggable="true" data-label="2. 하이리스크·하이리턴 전문가형 - 100종목">
+      <div class="list-item-inner">2. 하이리스크·하이리턴 전문가형 - <span class="sub">100종목</span></div>
+    </div>
+
+    <div class="list-item" draggable="true" data-label="3. 프로 투자자식 장기 베팅 - 100종목">
+      <div class="list-item-inner">3. 프로 투자자식 장기 베팅 - <span class="sub">100종목</span></div>
+    </div>
+
+    <div class="list-item" draggable="true" data-label="4. 공격적 성장 추구형 매니저 - 100종목">
+      <div class="list-item-inner">4. 공격적 성장 추구형 매니저 - <span class="sub">100종목</span></div>
+    </div>
+
+    <div class="list-item" draggable="true" data-label="5. 고변동성 장기 수익 포커스 - 100종목">
+      <div class="list-item-inner">5. 고변동성 장기 수익 포커스 - <span class="sub">100종목</span></div>
+    </div>
+
+    <div class="list-item" draggable="true" data-label="6. 리스크 감내 기반 초장기 성장 전략형 - 100종목">
+      <div class="list-item-inner">6. 리스크 감내 기반 초장기 성장 전략형 - <span class="sub">100종목</span></div>
+    </div>
+
+    <div class="list-item selected" draggable="true" data-label="7. 올해 안에 수익 실현 가능한 연말 유망종목 모음 그룹형 - 100종목">
+      <div class="list-item-inner">7. 올해 안에 수익 실현 가능한 연말 유망종목 모음 그룹형 - <span class="sub">100종목</span></div>
+    </div>
+
+    <div class="list-item" draggable="true" data-label="8. 전문적으로 투자하고 있는 리스크 장기 감수형 - 100종목">
+      <div class="list-item-inner">8. 전문적으로 투자하고 있는 리스크 장기 감수형 - <span class="sub">100종목</span></div>
+    </div>
+
+    <div class="list-item" draggable="true" data-label="9. 최소투자 - 0종목">
+      <div class="list-item-inner">9. 최소투자 - <span class="sub">0종목</span></div>
+    </div>
+
+    <div class="list-item" draggable="true" data-label="10. 전문적으로 투자하고 있는 리스크 장기 감수형의 텍스트가 최대로 길어질 경우 대비하는 말줄임표 테스트..... - 99999종목">
+      <div class="list-item-inner">
+        10. 전문적으로 투자하고 있는 리스크 장기 감수형의 텍스트가 최대로 길어질 경우 대비하는 말줄임표 테스트..... -
+        <span class="sub">99999종목</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div><b>전체 풀 :</b><span class="value">10</span></div>
+    <div><b>전체 종목 :</b><span class="value">10000</span></div>
+  </div>
+
+</div>
+
+<script>
+const toggle = document.getElementById("toggle");
+const list = document.getElementById("list");
+const arrow = document.getElementById("arrow");
+const selectedText = document.getElementById("selectedText");
+
+toggle.onclick = () => {
+  list.classList.toggle("open");
+  arrow.classList.toggle("open");
+};
+
+let dragged = null;
+
+const items = () => Array.from(document.querySelectorAll('.list-item'));
+
+items().forEach(item => {
+  // 드래그 시작
+  item.addEventListener('dragstart', () => {
+    dragged = item;
+    item.classList.add('dragging');
+  });
+
+  // 드래그 끝
+  item.addEventListener('dragend', () => {
+    item.classList.remove('dragging');
+    dragged = null;
+    items().forEach(i => i.classList.remove('drop-target'));
+  });
+
+  // 드롭 위치 가이드
+  item.addEventListener('dragover', e => {
+    e.preventDefault();
+    items().forEach(i => i.classList.remove('drop-target'));
+    item.classList.add('drop-target');
+  });
+
+  item.addEventListener('dragleave', () => {
+    item.classList.remove('drop-target');
+  });
+
+  // 실제 드롭
+  item.addEventListener('drop', e => {
+    e.preventDefault();
+    item.classList.remove('drop-target');
+
+    if (!dragged || dragged === item) return;
+
+    const rect = item.getBoundingClientRect();
+    const isBefore = e.clientY < rect.top + rect.height / 2;
+
+    if (isBefore) {
+      item.before(dragged);
+    } else {
+      item.after(dragged);
+    }
+  });
+
+  // 클릭 시 선택값 변경
+  item.addEventListener('click', () => {
+    items().forEach(i => i.classList.remove('selected'));
+    item.classList.add('selected');
+    selectedText.textContent = item.dataset.label;
+  });
+});
+</script>
+
+</body>
+</html>
+
