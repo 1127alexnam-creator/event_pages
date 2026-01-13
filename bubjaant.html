@@ -17,40 +17,20 @@
 
       /* 보라 글로우(최소) */
       --primaryGlow: rgba(101,101,255,0.18);
-
-      /* ✅ 안전영역/바닥 공백 색 */
-      --safeBg: #E9ECF2;
     }
 
     html, body { margin:0; padding:0; }
-
-    /* ✅ 바닥 공백이 생겨도 이 색이 보이게 */
-    html, body { background: var(--safeBg); }
-
     body {
+      background:#fff;
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
 
-    /* ✅ iOS safe-area 영역을 확실히 색칠 */
-    body::after{
-      content:"";
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      height: env(safe-area-inset-bottom);
-      background: var(--safeBg);
-      z-index: 1;              /* fixed 버튼보다 아래 */
-      pointer-events: none;
-    }
-
+    /* ✅ 하단 “하얀 공백(과한 여백)”의 주원인: wrap의 padding-bottom이 너무 큼
+       -> 버튼에 가려지지 않을 최소치로 줄임 */
     .wrap {
       max-width: 768px;
       margin: 0 auto;
-
-      /* 콘텐츠(이미지)는 흰 배경 유지 */
-      background: #fff;
-
-      /* 버튼 가림 방지용 최소 여백 */
       padding-bottom: calc(var(--mainBtnH) + 24px + env(safe-area-inset-bottom));
     }
 
@@ -71,7 +51,11 @@
       position: fixed;
       left: 50%;
       transform: translateX(-50%);
-      bottom: env(safe-area-inset-bottom); /* 안전영역만큼 띄움 */
+
+      /* ✅ 버튼 아래 “빈 바닥”이 보이는 원인: bottom 20px 띄움
+         -> 안전영역만 남기고 바닥에 붙임 */
+      bottom: env(safe-area-inset-bottom);
+
       width: calc(100% - (var(--sideGap) * 2));
       max-width: var(--maxW);
       z-index: 9999;
@@ -134,10 +118,10 @@
       border-top: 1px solid rgba(0,0,0,0.06);
     }
 
-    /* ✅ 아이콘 영역 1.5배(알약 크기는 그대로) */
+    /* ✅ 퀵버튼 자체는 고정, 아이콘 영역은 1.5배 유지 */
     .quick-icon{
-      width: 48px;
-      height: 48px;
+      width: 48px;  /* 32px -> 48px */
+      height: 48px; /* 32px -> 48px */
       border-radius: 50%;
       display:grid;
       place-items:center;
@@ -148,11 +132,10 @@
     .quick-icon.call{ background:#21C65A; }
 
     .quick-icon svg{
-      width: 30px;
-      height: 30px;
+      width: 30px;  /* 20px -> 30px */
+      height: 30px; /* 20px -> 30px */
       display:block;
     }
-
     /* 전화 SVG 미세 중앙 보정 */
     .quick-icon.call svg{ transform: translateY(0.5px); }
   </style>
@@ -183,6 +166,7 @@
       <!-- 전화 상담 -->
       <a class="quick-item" id="quick-call" href="tel:0221746446">
         <span class="quick-icon call" aria-hidden="true">
+          <!-- 중앙 밸런스 좋은 전화 아이콘 -->
           <svg viewBox="0 0 24 24" fill="none">
             <path fill="#fff" d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.07 21 3 13.93 3 5c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
           </svg>
