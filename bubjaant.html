@@ -12,11 +12,10 @@
       --maxW: 720px;
       --sideGap: 20px;
 
-      /* 메인 버튼 두께(패딩 늘린 상태) */
       --mainBtnH: 64px;
       --primary: #6565ff;
 
-      /* ✅ 보라 효과(글로우) 더 줄인 버전 */
+      /* 보라 글로우(최소) */
       --primaryGlow: rgba(101,101,255,0.18);
     }
 
@@ -26,11 +25,15 @@
       -webkit-font-smoothing:antialiased;
       text-rendering:optimizeLegibility;
     }
+
+    /* ✅ 하단 “하얀 공백(과한 여백)”의 주원인: wrap의 padding-bottom이 너무 큼
+       -> 버튼에 가려지지 않을 최소치로 줄임 */
     .wrap {
       max-width: 768px;
       margin: 0 auto;
-      padding-bottom: calc(160px + env(safe-area-inset-bottom));
+      padding-bottom: calc(var(--mainBtnH) + 24px + env(safe-area-inset-bottom));
     }
+
     img {
       display:block;
       width:100%;
@@ -48,7 +51,11 @@
       position: fixed;
       left: 50%;
       transform: translateX(-50%);
-      bottom: calc(20px + env(safe-area-inset-bottom));
+
+      /* ✅ 버튼 아래 “빈 바닥”이 보이는 원인: bottom 20px 띄움
+         -> 안전영역만 남기고 바닥에 붙임 */
+      bottom: env(safe-area-inset-bottom);
+
       width: calc(100% - (var(--sideGap) * 2));
       max-width: var(--maxW);
       z-index: 9999;
@@ -56,7 +63,7 @@
     }
     .fixed-area a{ pointer-events: auto; }
 
-    /* ===== 메인 플로팅 버튼(글로우 범위 더 축소) ===== */
+    /* ===== 메인 플로팅 버튼 ===== */
     .floating-btn {
       display:block;
       width: 100%;
@@ -69,32 +76,27 @@
       font-weight: 800;
       text-decoration: none;
       letter-spacing: -0.2px;
-
-      /* ✅ 보라 그림자(범위 더 줄임) */
       box-shadow:
         0 8px 14px var(--primaryGlow),
         0 7px 14px rgba(0,0,0,0.15);
     }
     .floating-btn:active { opacity: 0.86; }
 
-    /* ===== 세로 알약 퀵버튼 (알약 크기 고정) ===== */
+    /* ===== 세로 알약 퀵버튼 (크기 고정) ===== */
     .quick-pill{
       position:absolute;
       right: 0;
       bottom: calc(var(--mainBtnH) + 14px);
-      width: 74px; /* ✅ 고정 */
+      width: 74px; /* 고정 */
       border-radius: 999px;
       background:#fff;
       overflow:hidden;
       border: 1px solid rgba(0,0,0,0.06);
-
-      /* 보라 느낌은 아주 약하게 */
       box-shadow:
         0 8px 14px rgba(101,101,255,0.12),
         0 7px 14px rgba(0,0,0,0.12);
     }
 
-    /* 텍스트/아이콘은 키운 상태 유지 */
     .quick-item{
       display:flex;
       flex-direction: column;
@@ -116,9 +118,10 @@
       border-top: 1px solid rgba(0,0,0,0.06);
     }
 
+    /* ✅ 퀵버튼 자체는 고정, 아이콘 영역은 1.5배 유지 */
     .quick-icon{
-      width: 32px;
-      height: 32px;
+      width: 48px;  /* 32px -> 48px */
+      height: 48px; /* 32px -> 48px */
       border-radius: 50%;
       display:grid;
       place-items:center;
@@ -127,13 +130,13 @@
     }
     .quick-icon.kakao{ background:#FEE500; }
     .quick-icon.call{ background:#21C65A; }
+
     .quick-icon svg{
-      width: 20px;
-      height: 20px;
+      width: 30px;  /* 20px -> 30px */
+      height: 30px; /* 20px -> 30px */
       display:block;
     }
-
-    /* ✅ 전화 아이콘이 미세하게 삐끗하면 중앙 보정(필요시) */
+    /* 전화 SVG 미세 중앙 보정 */
     .quick-icon.call svg{ transform: translateY(0.5px); }
   </style>
 </head>
@@ -163,7 +166,7 @@
       <!-- 전화 상담 -->
       <a class="quick-item" id="quick-call" href="tel:0221746446">
         <span class="quick-icon call" aria-hidden="true">
-          <!-- ✅ 중앙 밸런스 좋은 전화 아이콘으로 교체 -->
+          <!-- 중앙 밸런스 좋은 전화 아이콘 -->
           <svg viewBox="0 0 24 24" fill="none">
             <path fill="#fff" d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.07 21 3 13.93 3 5c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
           </svg>
@@ -221,7 +224,7 @@
     window.addEventListener('resize', onScroll);
     onScroll();
 
-    // ===== 전화: Android면 DIAL Intent로(자동 통화 X), 그 외는 tel: =====
+    // 전화: Android면 DIAL Intent로(자동 통화 X), 그 외는 tel:
     const callBtn = document.getElementById('quick-call');
     if (callBtn) {
       callBtn.addEventListener('click', (e) => {
