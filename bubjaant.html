@@ -53,7 +53,7 @@
     .fixed-area a,
     .fixed-area button { pointer-events: auto; }
 
-    /* ===== 메인 플로팅 버튼 ===== */
+    /* ===== 메인 CTA ===== */
     .floating-btn{
       display:flex;
       align-items:center;
@@ -72,23 +72,31 @@
     .floating-btn:active{ opacity:0.85; }
 
     /* =========================================================
-       ✅ 퀵메뉴: 기본은 ? 원형(FAB) → 클릭하면 알약(패널) 펼침
+       ✅ moonble식: FAB(원형) 고정 + 패널(알약)은 위로 슬라이드 업
+       - 포인트: quick-panel을 absolute로 "FAB 위"에 붙인다
     ========================================================== */
     .quick-wrap{
       position:absolute;
       right: 0;
       bottom: calc(var(--mainBtnH) + 14px);
+      width: 74px;     /* 알약 폭 기준 */
+      height: 140px;   /* 패널이 열려도 레이아웃 영향 0(absolute라 사실상 의미 적음) */
       pointer-events: auto;
     }
 
-    /* (1) 접힌 상태: ? 원형 버튼 */
+    /* (1) FAB: ? 원형 버튼 (항상 같은 자리 고정) */
     .quick-fab{
+      position:absolute;
+      right: 0;
+      bottom: 0;
+
       width: 56px;
       height: 56px;
       border-radius: 999px;
       border: 1px solid rgba(0,0,0,0.08);
       background:#fff;
       box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+
       display:grid;
       place-items:center;
       cursor:pointer;
@@ -98,21 +106,60 @@
       font-weight: 900;
       color:#111;
 
+      /* 초기 “살짝 살아있는” 느낌 */
+      animation: quickIntro 520ms cubic-bezier(.2,.9,.2,1) both, quickFloat 2.8s ease-in-out 700ms infinite;
       transition: transform 220ms ease, opacity 220ms ease;
     }
     .quick-fab:active{ transform: scale(0.97); }
 
-    /* (2) 펼친 상태: 접기 버튼 + 알약 메뉴 */
-    .quick-panel{
-      position: relative;
-      transform-origin: bottom right;
-      transform: translateY(10px) scale(0.92);
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 240ms ease, opacity 240ms ease;
+    /* 펄스 링 */
+    .quick-fab::before{
+      content:"";
+      position:absolute;
+      inset:-6px;
+      border-radius:999px;
+      border: 2px solid rgba(101,101,255,0.20);
+      opacity:0;
+      transform: scale(0.9);
+      animation: quickPulse 2.2s ease-out 900ms infinite;
+      pointer-events:none;
     }
 
-    /* 상태 토글 클래스 */
+    @keyframes quickIntro{
+      0%{ transform: translateY(6px) scale(0.92); opacity:0; }
+      100%{ transform: translateY(0) scale(1); opacity:1; }
+    }
+    @keyframes quickFloat{
+      0%,100%{ transform: translateY(0); }
+      50%{ transform: translateY(-3px); }
+    }
+    @keyframes quickPulse{
+      0%{ opacity:0.45; transform: scale(0.92); }
+      70%{ opacity:0; transform: scale(1.55); }
+      100%{ opacity:0; transform: scale(1.55); }
+    }
+
+    /* (2) 패널: FAB 위에 붙어서 “위로” 나와야 함 */
+    .quick-panel{
+      position:absolute;
+      right: 0;
+      bottom: 68px; /* 56(FAB) + 12(gap) */
+
+      display:flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+
+      transform-origin: bottom right;
+
+      /* 닫힘 상태: FAB 근처(아래)에서 살짝 숨었다가 */
+      transform: translateY(12px) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 240ms cubic-bezier(.2,.9,.2,1), opacity 200ms ease;
+    }
+
+    /* ✅ 열린 상태: 위로 “슬라이드 업” */
     body.quick-open .quick-panel{
       transform: translateY(0) scale(1);
       opacity: 1;
@@ -120,11 +167,41 @@
     }
     body.quick-open .quick-fab{
       opacity: 0;
-      transform: scale(0.92);
+      transform: scale(0.90);
       pointer-events: none;
+      animation: none; /* 열렸을 땐 플로팅/펄스 중지 */
     }
 
-    /* 알약 메뉴(기존 quick-pill) */
+    /* 접기 버튼(알약 위) */
+    .quick-collapse{
+      width: 74px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background:#fff;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+      cursor:pointer;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 6px;
+
+      font-size: 12px;
+      font-weight: 900;
+      color:#111;
+      letter-spacing:-0.2px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .quick-collapse:active{ transform: scale(0.98); }
+
+    .chev{
+      width: 14px;
+      height: 14px;
+      display:block;
+    }
+
+    /* 알약 메뉴 */
     .quick-pill{
       width: 74px;
       border-radius: 999px;
@@ -155,7 +232,7 @@
       border-top: 1px solid rgba(0,0,0,0.06);
     }
 
-    /* ✅ 퀵버튼 자체 크기는 고정, 아이콘 "영역"만 1.5배 */
+    /* 아이콘 영역 1.5배 */
     .quick-icon{
       width: 48px;
       height: 48px;
@@ -174,38 +251,6 @@
       display:block;
     }
     .quick-icon.call svg{ transform: translateY(0.5px); }
-
-    /* ✅ 알약 바로 위 "접기" 버튼 */
-    .quick-collapse{
-      position:absolute;
-      right: 0;
-      top: -42px;               /* 알약 위로 살짝 띄움 */
-      width: 74px;              /* 알약 폭과 정렬 */
-      height: 34px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,0.08);
-      background:#fff;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.14);
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 6px;
-
-      font-size: 12px;
-      font-weight: 900;
-      color:#111;
-      letter-spacing:-0.2px;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 160ms ease;
-    }
-    .quick-collapse:active{ transform: scale(0.98); }
-
-    .chev{
-      width: 14px;
-      height: 14px;
-      display:block;
-    }
   </style>
 </head>
 
@@ -220,9 +265,9 @@
   </main>
 
   <div class="fixed-area">
-    <!-- ✅ 퀵메뉴 wrapper -->
-    <div class="quick-wrap" aria-label="빠른 상담 메뉴">
-      <!-- (기본) ? 원형 아이콘 -->
+    <!-- ✅ 퀵메뉴 -->
+    <div class="quick-wrap" id="quick-wrap" aria-label="빠른 상담 메뉴">
+      <!-- FAB -->
       <button
         class="quick-fab"
         id="quick-open"
@@ -232,7 +277,7 @@
         type="button"
       >?</button>
 
-      <!-- (펼침) 알약 + 접기 -->
+      <!-- Panel (FAB 위로 등장) -->
       <div class="quick-panel" id="quick-panel" aria-hidden="true">
         <button class="quick-collapse" id="quick-close" type="button" aria-label="빠른 상담 메뉴 접기">
           <svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -242,7 +287,6 @@
         </button>
 
         <div class="quick-pill">
-          <!-- 카카오 상담 -->
           <a class="quick-item" href="http://pf.kakao.com/_swxiLxb" target="_blank" rel="noopener">
             <span class="quick-icon kakao" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none">
@@ -252,7 +296,6 @@
             <span>카톡상담</span>
           </a>
 
-          <!-- 전화 상담 -->
           <a class="quick-item" id="quick-call" href="tel:0221746446">
             <span class="quick-icon call" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none">
@@ -326,7 +369,8 @@
       }, { passive: false });
     }
 
-    /* ===== ✅ 퀵메뉴 접기/펼치기 ===== */
+    /* ===== ✅ 퀵메뉴 토글 ===== */
+    const quickWrap = document.getElementById('quick-wrap');
     const openBtn = document.getElementById('quick-open');
     const closeBtn = document.getElementById('quick-close');
     const panel = document.getElementById('quick-panel');
@@ -337,13 +381,18 @@
       if (panel) panel.setAttribute('aria-hidden', String(!isOpen));
     }
 
-    // 기본은 접힌 상태
     setOpen(false);
 
     if (openBtn) openBtn.addEventListener('click', () => setOpen(true));
     if (closeBtn) closeBtn.addEventListener('click', () => setOpen(false));
 
-    // ESC로 닫기(데스크탑 편의)
+    // 바깥 클릭 시 닫기 (moonble처럼 자연스러움)
+    document.addEventListener('click', (e) => {
+      if (!document.body.classList.contains('quick-open')) return;
+      if (!quickWrap) return;
+      if (!quickWrap.contains(e.target)) setOpen(false);
+    });
+
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') setOpen(false);
     });
