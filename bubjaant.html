@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>부자티비 단독 이벤트</title>
 
+  <!-- 절대경로 이미지 (새 파일명 적용) -->
   <link rel="preload" as="image" href="https://1127alexnam-creator.github.io/event_pages/bujaagnt1.jpg" />
 
   <style>
@@ -56,11 +57,11 @@
     }
     .fixed-area a{ pointer-events: auto; }
 
-    /* ===== 메인 플로팅 버튼(기존 그대로) ===== */
+    /* ===== 메인 플로팅 버튼 ===== */
     .floating-btn {
       display:block;
       width: 100%;
-      background: #6565ff;
+      background: #6565ff; /* 요청한 색 */
       color: #fff;
       padding: 15px 0;
       text-align: center;
@@ -73,12 +74,12 @@
     }
     .floating-btn:active { opacity: 0.85; }
 
-    /* ===== 세로 알약 퀵버튼 ===== */
+    /* ===== 세로 알약 퀵버튼 (축소 버전) ===== */
     .quick-pill{
       position:absolute;
       right: 0;
-      bottom: calc(var(--mainBtnH) + 12px);
-      width: 92px;
+      bottom: calc(var(--mainBtnH) + 10px);
+      width: 76px;              /* 92px -> 76px */
       border-radius: 999px;
       background:#fff;
       box-shadow: 0 10px 26px rgba(0,0,0,0.18);
@@ -91,11 +92,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 12px 10px;
+      gap: 5px;
+      padding: 10px 8px;        /* 12px 10px -> 10px 8px */
       text-decoration:none;
       color:#111;
-      font-size: 12px;
+      font-size: 11px;          /* 12px -> 11px */
       font-weight: 800;
       letter-spacing: -0.2px;
       -webkit-tap-highlight-color: transparent;
@@ -106,8 +107,8 @@
     }
 
     .quick-icon{
-      width: 34px;
-      height: 34px;
+      width: 28px;              /* 34px -> 28px */
+      height: 28px;             /* 34px -> 28px */
       border-radius: 50%;
       display:grid;
       place-items:center;
@@ -115,7 +116,11 @@
     }
     .quick-icon.kakao{ background:#FEE500; }
     .quick-icon.call{ background:#21C65A; }
-    .quick-icon svg{ width: 20px; height: 20px; display:block; }
+    .quick-icon svg{
+      width: 17px;              /* 20px -> 17px */
+      height: 17px;             /* 20px -> 17px */
+      display:block;
+    }
   </style>
 </head>
 <body>
@@ -133,8 +138,8 @@
   <div class="fixed-area">
     <!-- 퀵버튼(세로 알약) -->
     <div class="quick-pill" aria-label="빠른 상담 버튼">
-      <!-- 카카오 상담: 링크는 여기만 바꿔 끼우세요 -->
-      <a class="quick-item" href="YOUR_KAKAO_LINK" target="_blank" rel="noopener">
+      <!-- 카카오 상담: 새창 열기 -->
+      <a class="quick-item" href="http://pf.kakao.com/_swxiLxb" target="_blank" rel="noopener">
         <span class="quick-icon kakao" aria-hidden="true">
           <!-- 간단 카카오 느낌 아이콘 -->
           <svg viewBox="0 0 24 24" fill="none">
@@ -206,7 +211,7 @@
     window.addEventListener('resize', onScroll);
     onScroll();
 
-    // ===== 전화: Android면 DIAL Intent로, 그 외는 tel: =====
+    // ===== 전화: Android면 DIAL Intent로(자동 통화 X), 그 외는 tel: =====
     const callBtn = document.getElementById('quick-call');
     if (callBtn) {
       callBtn.addEventListener('click', (e) => {
@@ -215,10 +220,8 @@
 
         if (isAndroid) {
           e.preventDefault();
-          // 다이얼 화면으로(자동 통화 아님)
           window.location.href = 'intent://0221746446#Intent;scheme=tel;action=android.intent.action.DIAL;end';
         }
-        // iOS/기타는 href="tel:..." 그대로 사용
       }, { passive: false });
     }
   })();
