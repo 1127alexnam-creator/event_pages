@@ -12,11 +12,10 @@
       --maxW: 720px;
       --sideGap: 20px;
 
-      --mainBtnH: 64px;
-      --primary: #6565ff;
+      /* 레퍼런스(bubjaant_app.html) 느낌에 맞춘 메인버튼 높이 */
+      --mainBtnH: 56px;
 
-      /* 보라 글로우(최소) */
-      --primaryGlow: rgba(101,101,255,0.18);
+      --primary: #6565ff;
     }
 
     html, body { margin:0; padding:0; }
@@ -26,12 +25,10 @@
       text-rendering:optimizeLegibility;
     }
 
-    /* ✅ 하단 “하얀 공백(과한 여백)”의 주원인: wrap의 padding-bottom이 너무 큼
-       -> 버튼에 가려지지 않을 최소치로 줄임 */
+    /* ✅ 이미지 하단 공백 없애기: padding-bottom 제거 */
     .wrap {
       max-width: 768px;
       margin: 0 auto;
-      padding-bottom: calc(var(--mainBtnH) + 24px + env(safe-area-inset-bottom));
     }
 
     img {
@@ -43,6 +40,7 @@
       touch-action:manipulation;
       transition: height 200ms ease;
     }
+
     ::-webkit-scrollbar { width: 0; height: 0; }
     html { scroll-behavior: smooth; }
 
@@ -51,11 +49,7 @@
       position: fixed;
       left: 50%;
       transform: translateX(-50%);
-
-      /* ✅ 버튼 아래 “빈 바닥”이 보이는 원인: bottom 20px 띄움
-         -> 안전영역만 남기고 바닥에 붙임 */
-      bottom: env(safe-area-inset-bottom);
-
+      bottom: calc(20px + env(safe-area-inset-bottom)); /* 레퍼런스 bottom:20px */
       width: calc(100% - (var(--sideGap) * 2));
       max-width: var(--maxW);
       z-index: 9999;
@@ -63,24 +57,28 @@
     }
     .fixed-area a{ pointer-events: auto; }
 
-    /* ===== 메인 플로팅 버튼 ===== */
+    /* ===== 메인 플로팅 버튼 (레퍼런스 스타일) ===== */
     .floating-btn {
-      display:block;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
       width: 100%;
+      height: var(--mainBtnH);
       background: var(--primary);
       color: #fff;
-      padding: 20px 0;
+
       text-align: center;
-      border-radius: 14px;
+      border-radius: 12px;      /* 레퍼런스 12px */
       font-size: 18px;
-      font-weight: 800;
+      font-weight: 700;         /* 레퍼런스 700 */
       text-decoration: none;
       letter-spacing: -0.2px;
-      box-shadow:
-        0 8px 14px var(--primaryGlow),
-        0 7px 14px rgba(0,0,0,0.15);
+
+      /* 레퍼런스 shadow */
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
-    .floating-btn:active { opacity: 0.86; }
+    .floating-btn:active { opacity: 0.85; }
 
     /* ===== 세로 알약 퀵버튼 (크기 고정) ===== */
     .quick-pill{
@@ -92,9 +90,9 @@
       background:#fff;
       overflow:hidden;
       border: 1px solid rgba(0,0,0,0.06);
-      box-shadow:
-        0 8px 14px rgba(101,101,255,0.12),
-        0 7px 14px rgba(0,0,0,0.12);
+
+      /* 메인 버튼과 톤 맞춰 보라 글로우 제거/축소 → 블랙계열로 정리 */
+      box-shadow: 0 6px 18px rgba(0,0,0,0.14);
     }
 
     .quick-item{
@@ -118,10 +116,10 @@
       border-top: 1px solid rgba(0,0,0,0.06);
     }
 
-    /* ✅ 퀵버튼 자체는 고정, 아이콘 영역은 1.5배 유지 */
+    /* ✅ 퀵버튼 자체 크기는 고정, 아이콘 "영역"만 1.5배 확대 */
     .quick-icon{
-      width: 48px;  /* 32px -> 48px */
-      height: 48px; /* 32px -> 48px */
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       display:grid;
       place-items:center;
@@ -132,11 +130,12 @@
     .quick-icon.call{ background:#21C65A; }
 
     .quick-icon svg{
-      width: 30px;  /* 20px -> 30px */
-      height: 30px; /* 20px -> 30px */
+      width: 30px;
+      height: 30px;
       display:block;
     }
-    /* 전화 SVG 미세 중앙 보정 */
+
+    /* 전화 SVG 미세 중앙 보정(필요시) */
     .quick-icon.call svg{ transform: translateY(0.5px); }
   </style>
 </head>
@@ -166,7 +165,6 @@
       <!-- 전화 상담 -->
       <a class="quick-item" id="quick-call" href="tel:0221746446">
         <span class="quick-icon call" aria-hidden="true">
-          <!-- 중앙 밸런스 좋은 전화 아이콘 -->
           <svg viewBox="0 0 24 24" fill="none">
             <path fill="#fff" d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.07 21 3 13.93 3 5c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
           </svg>
@@ -175,7 +173,9 @@
       </a>
     </div>
 
-    <a href="https://thinkpool.onelink.me/fY6D/BujaTV" class="floating-btn">부자티비 혜택 받기</a>
+    <a href="https://thinkpool.onelink.me/fY6D/BujaTV" class="floating-btn" target="_blank" rel="noopener">
+      부자티비 혜택 받기
+    </a>
   </div>
 
   <script>
@@ -224,7 +224,7 @@
     window.addEventListener('resize', onScroll);
     onScroll();
 
-    // 전화: Android면 DIAL Intent로(자동 통화 X), 그 외는 tel:
+    // ===== 전화: Android면 DIAL Intent로(자동 통화 X), 그 외는 tel: =====
     const callBtn = document.getElementById('quick-call');
     if (callBtn) {
       callBtn.addEventListener('click', (e) => {
