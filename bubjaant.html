@@ -12,7 +12,9 @@
       --maxW: 720px;
       --sideGap: 20px;
 
+      /* 레퍼런스(bubjaant_app.html) 느낌에 맞춘 메인버튼 높이 */
       --mainBtnH: 56px;
+
       --primary: #6565ff;
     }
 
@@ -23,10 +25,13 @@
       text-rendering:optimizeLegibility;
     }
 
-    /* ✅ 이미지 하단 공백 없애기 */
-    .wrap { max-width: 768px; margin: 0 auto; }
+    /* ✅ 이미지 하단 공백 없애기: padding-bottom 제거 */
+    .wrap {
+      max-width: 768px;
+      margin: 0 auto;
+    }
 
-    img{
+    img {
       display:block;
       width:100%;
       height:auto;
@@ -44,170 +49,49 @@
       position: fixed;
       left: 50%;
       transform: translateX(-50%);
-      bottom: calc(20px + env(safe-area-inset-bottom));
+      bottom: calc(20px + env(safe-area-inset-bottom)); /* 레퍼런스 bottom:20px */
       width: calc(100% - (var(--sideGap) * 2));
       max-width: var(--maxW);
       z-index: 9999;
       pointer-events: none;
     }
-    .fixed-area a,
-    .fixed-area button { pointer-events: auto; }
+    .fixed-area a{ pointer-events: auto; }
 
-    /* ===== 메인 CTA ===== */
-    .floating-btn{
+    /* ===== 메인 플로팅 버튼 (레퍼런스 스타일) ===== */
+    .floating-btn {
       display:flex;
       align-items:center;
       justify-content:center;
-      width:100%;
-      height:var(--mainBtnH);
-      background:var(--primary);
-      color:#fff;
-      border-radius:12px;
-      font-size:18px;
-      font-weight:700;
-      text-decoration:none;
-      letter-spacing:-0.2px;
+
+      width: 100%;
+      height: var(--mainBtnH);
+      background: var(--primary);
+      color: #fff;
+
+      text-align: center;
+      border-radius: 12px;      /* 레퍼런스 12px */
+      font-size: 18px;
+      font-weight: 700;         /* 레퍼런스 700 */
+      text-decoration: none;
+      letter-spacing: -0.2px;
+
+      /* 레퍼런스 shadow */
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
-    .floating-btn:active{ opacity:0.85; }
+    .floating-btn:active { opacity: 0.85; }
 
-    /* =========================================================
-       ✅ moonble식: FAB(원형) 고정 + 패널(알약)은 위로 슬라이드 업
-       - 포인트: quick-panel을 absolute로 "FAB 위"에 붙인다
-    ========================================================== */
-    .quick-wrap{
+    /* ===== 세로 알약 퀵버튼 (크기 고정) ===== */
+    .quick-pill{
       position:absolute;
       right: 0;
       bottom: calc(var(--mainBtnH) + 14px);
-      width: 74px;     /* 알약 폭 기준 */
-      height: 140px;   /* 패널이 열려도 레이아웃 영향 0(absolute라 사실상 의미 적음) */
-      pointer-events: auto;
-    }
-
-    /* (1) FAB: ? 원형 버튼 (항상 같은 자리 고정) */
-    .quick-fab{
-      position:absolute;
-      right: 0;
-      bottom: 0;
-
-      width: 56px;
-      height: 56px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,0.08);
-      background:#fff;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.16);
-
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      -webkit-tap-highlight-color: transparent;
-
-      font-size: 20px;
-      font-weight: 900;
-      color:#111;
-
-      /* 초기 “살짝 살아있는” 느낌 */
-      animation: quickIntro 520ms cubic-bezier(.2,.9,.2,1) both, quickFloat 2.8s ease-in-out 700ms infinite;
-      transition: transform 220ms ease, opacity 220ms ease;
-    }
-    .quick-fab:active{ transform: scale(0.97); }
-
-    /* 펄스 링 */
-    .quick-fab::before{
-      content:"";
-      position:absolute;
-      inset:-6px;
-      border-radius:999px;
-      border: 2px solid rgba(101,101,255,0.20);
-      opacity:0;
-      transform: scale(0.9);
-      animation: quickPulse 2.2s ease-out 900ms infinite;
-      pointer-events:none;
-    }
-
-    @keyframes quickIntro{
-      0%{ transform: translateY(6px) scale(0.92); opacity:0; }
-      100%{ transform: translateY(0) scale(1); opacity:1; }
-    }
-    @keyframes quickFloat{
-      0%,100%{ transform: translateY(0); }
-      50%{ transform: translateY(-3px); }
-    }
-    @keyframes quickPulse{
-      0%{ opacity:0.45; transform: scale(0.92); }
-      70%{ opacity:0; transform: scale(1.55); }
-      100%{ opacity:0; transform: scale(1.55); }
-    }
-
-    /* (2) 패널: FAB 위에 붙어서 “위로” 나와야 함 */
-    .quick-panel{
-      position:absolute;
-      right: 0;
-      bottom: 68px; /* 56(FAB) + 12(gap) */
-
-      display:flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-
-      transform-origin: bottom right;
-
-      /* 닫힘 상태: FAB 근처(아래)에서 살짝 숨었다가 */
-      transform: translateY(12px) scale(0.96);
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 240ms cubic-bezier(.2,.9,.2,1), opacity 200ms ease;
-    }
-
-    /* ✅ 열린 상태: 위로 “슬라이드 업” */
-    body.quick-open .quick-panel{
-      transform: translateY(0) scale(1);
-      opacity: 1;
-      pointer-events: auto;
-    }
-    body.quick-open .quick-fab{
-      opacity: 0;
-      transform: scale(0.90);
-      pointer-events: none;
-      animation: none; /* 열렸을 땐 플로팅/펄스 중지 */
-    }
-
-    /* 접기 버튼(알약 위) */
-    .quick-collapse{
-      width: 74px;
-      height: 34px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,0.08);
-      background:#fff;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.14);
-      cursor:pointer;
-
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 6px;
-
-      font-size: 12px;
-      font-weight: 900;
-      color:#111;
-      letter-spacing:-0.2px;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .quick-collapse:active{ transform: scale(0.98); }
-
-    .chev{
-      width: 14px;
-      height: 14px;
-      display:block;
-    }
-
-    /* 알약 메뉴 */
-    .quick-pill{
-      width: 74px;
+      width: 74px; /* 고정 */
       border-radius: 999px;
       background:#fff;
       overflow:hidden;
       border: 1px solid rgba(0,0,0,0.06);
+
+      /* 메인 버튼과 톤 맞춰 보라 글로우 제거/축소 → 블랙계열로 정리 */
       box-shadow: 0 6px 18px rgba(0,0,0,0.14);
     }
 
@@ -220,26 +104,26 @@
       padding: 14px 8px;
       text-decoration:none;
       color:#111;
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:-0.2px;
-      white-space:nowrap;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
       line-height: 1.05;
     }
-    .quick-item:active{ opacity:0.86; }
+    .quick-item:active{ opacity: 0.86; }
     .quick-item + .quick-item{
       border-top: 1px solid rgba(0,0,0,0.06);
     }
 
-    /* 아이콘 영역 1.5배 */
+    /* ✅ 퀵버튼 자체 크기는 고정, 아이콘 "영역"만 1.5배 확대 */
     .quick-icon{
       width: 48px;
       height: 48px;
       border-radius: 50%;
       display:grid;
       place-items:center;
-      flex:none;
+      flex: none;
       box-shadow: 0 5px 12px rgba(0,0,0,0.10);
     }
     .quick-icon.kakao{ background:#FEE500; }
@@ -250,11 +134,13 @@
       height: 30px;
       display:block;
     }
+
+    /* 전화 SVG 미세 중앙 보정(필요시) */
     .quick-icon.call svg{ transform: translateY(0.5px); }
   </style>
 </head>
-
 <body>
+
   <main class="wrap">
     <img
       id="hero"
@@ -265,50 +151,28 @@
   </main>
 
   <div class="fixed-area">
-    <!-- ✅ 퀵메뉴 -->
-    <div class="quick-wrap" id="quick-wrap" aria-label="빠른 상담 메뉴">
-      <!-- FAB -->
-      <button
-        class="quick-fab"
-        id="quick-open"
-        aria-label="빠른 상담 메뉴 열기"
-        aria-expanded="false"
-        aria-controls="quick-panel"
-        type="button"
-      >?</button>
-
-      <!-- Panel (FAB 위로 등장) -->
-      <div class="quick-panel" id="quick-panel" aria-hidden="true">
-        <button class="quick-collapse" id="quick-close" type="button" aria-label="빠른 상담 메뉴 접기">
-          <svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M7 14l5-5 5 5" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="quick-pill" aria-label="빠른 상담 버튼">
+      <!-- 카카오 상담: 새창 -->
+      <a class="quick-item" href="http://pf.kakao.com/_swxiLxb" target="_blank" rel="noopener">
+        <span class="quick-icon kakao" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 4.2c-4.6 0-8.3 2.9-8.3 6.5 0 2.3 1.5 4.3 3.8 5.4l-.8 3.2c-.1.4.3.8.7.6l3.8-2.1c.3 0 .5.1.8.1 4.6 0 8.3-2.9 8.3-6.5S16.6 4.2 12 4.2Z" fill="#111"/>
           </svg>
-          접기
-        </button>
+        </span>
+        <span>카톡상담</span>
+      </a>
 
-        <div class="quick-pill">
-          <a class="quick-item" href="http://pf.kakao.com/_swxiLxb" target="_blank" rel="noopener">
-            <span class="quick-icon kakao" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 4.2c-4.6 0-8.3 2.9-8.3 6.5 0 2.3 1.5 4.3 3.8 5.4l-.8 3.2c-.1.4.3.8.7.6l3.8-2.1c.3 0 .5.1.8.1 4.6 0 8.3-2.9 8.3-6.5S16.6 4.2 12 4.2Z" fill="#111"/>
-              </svg>
-            </span>
-            <span>카톡상담</span>
-          </a>
-
-          <a class="quick-item" id="quick-call" href="tel:0221746446">
-            <span class="quick-icon call" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path fill="#fff" d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.07 21 3 13.93 3 5c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-              </svg>
-            </span>
-            <span>전화상담</span>
-          </a>
-        </div>
-      </div>
+      <!-- 전화 상담 -->
+      <a class="quick-item" id="quick-call" href="tel:0221746446">
+        <span class="quick-icon call" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path fill="#fff" d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.07 21 3 13.93 3 5c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+          </svg>
+        </span>
+        <span>전화상담</span>
+      </a>
     </div>
 
-    <!-- 메인 CTA -->
     <a href="https://thinkpool.onelink.me/fY6D/BujaTV" class="floating-btn" target="_blank" rel="noopener">
       부자티비 혜택 받기
     </a>
@@ -316,87 +180,65 @@
 
   <script>
   (() => {
-    /* ===== 이미지 스크롤 늘림(기존 로직 유지) ===== */
     const img = document.getElementById('hero');
-    if (img) {
-      const MAX_SCALE_Y = 1.03;
-      const TRIGGER_START = 0.80;
-      let baseHeight = null;
+    if (!img) return;
 
-      img.addEventListener("load", () => {
-        baseHeight = img.naturalHeight / (img.naturalWidth / img.offsetWidth);
+    const MAX_SCALE_Y = 1.03;
+    const TRIGGER_START = 0.80;
+
+    let baseHeight = null;
+
+    img.addEventListener("load", () => {
+      baseHeight = img.naturalHeight / (img.naturalWidth / img.offsetWidth);
+    });
+
+    let ticking = false;
+
+    function onScroll() {
+      if (!baseHeight) return;
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        const scrollTop = window.scrollY || window.pageYOffset;
+        const doc = document.documentElement;
+        const docHeight = doc.scrollHeight;
+        const winHeight = window.innerHeight;
+
+        const progress = (scrollTop + winHeight) / docHeight;
+
+        if (progress >= TRIGGER_START) {
+          const t = Math.min(1, (progress - TRIGGER_START) / (1 - TRIGGER_START));
+          const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+          const scaleY = 1 + (MAX_SCALE_Y - 1) * eased;
+          img.style.height = (baseHeight * scaleY) + "px";
+        } else {
+          img.style.height = baseHeight + "px";
+        }
+
+        ticking = false;
       });
-
-      let ticking = false;
-      function onScroll() {
-        if (!baseHeight) return;
-        if (ticking) return;
-        ticking = true;
-
-        requestAnimationFrame(() => {
-          const scrollTop = window.scrollY || window.pageYOffset;
-          const doc = document.documentElement;
-          const docHeight = doc.scrollHeight;
-          const winHeight = window.innerHeight;
-          const progress = (scrollTop + winHeight) / docHeight;
-
-          if (progress >= TRIGGER_START) {
-            const t = Math.min(1, (progress - TRIGGER_START) / (1 - TRIGGER_START));
-            const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
-            const scaleY = 1 + (MAX_SCALE_Y - 1) * eased;
-            img.style.height = (baseHeight * scaleY) + "px";
-          } else {
-            img.style.height = baseHeight + "px";
-          }
-          ticking = false;
-        });
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll);
-      onScroll();
     }
 
-    /* ===== 전화: Android면 DIAL Intent로(자동 통화 X), 그 외 tel: ===== */
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+
+    // ===== 전화: Android면 DIAL Intent로(자동 통화 X), 그 외는 tel: =====
     const callBtn = document.getElementById('quick-call');
     if (callBtn) {
       callBtn.addEventListener('click', (e) => {
         const ua = navigator.userAgent || '';
         const isAndroid = /Android/i.test(ua);
+
         if (isAndroid) {
           e.preventDefault();
           window.location.href = 'intent://0221746446#Intent;scheme=tel;action=android.intent.action.DIAL;end';
         }
       }, { passive: false });
     }
-
-    /* ===== ✅ 퀵메뉴 토글 ===== */
-    const quickWrap = document.getElementById('quick-wrap');
-    const openBtn = document.getElementById('quick-open');
-    const closeBtn = document.getElementById('quick-close');
-    const panel = document.getElementById('quick-panel');
-
-    function setOpen(isOpen){
-      document.body.classList.toggle('quick-open', isOpen);
-      if (openBtn) openBtn.setAttribute('aria-expanded', String(isOpen));
-      if (panel) panel.setAttribute('aria-hidden', String(!isOpen));
-    }
-
-    setOpen(false);
-
-    if (openBtn) openBtn.addEventListener('click', () => setOpen(true));
-    if (closeBtn) closeBtn.addEventListener('click', () => setOpen(false));
-
-    // 바깥 클릭 시 닫기 (moonble처럼 자연스러움)
-    document.addEventListener('click', (e) => {
-      if (!document.body.classList.contains('quick-open')) return;
-      if (!quickWrap) return;
-      if (!quickWrap.contains(e.target)) setOpen(false);
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setOpen(false);
-    });
   })();
   </script>
+
 </body>
 </html>
