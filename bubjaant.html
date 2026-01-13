@@ -12,10 +12,12 @@
       --maxW: 720px;
       --sideGap: 20px;
 
-      /* 메인 버튼 두께(패딩 늘렸으니 위치 계산용도 같이 증가) */
+      /* 메인 버튼 두께(패딩 늘린 상태) */
       --mainBtnH: 64px;
       --primary: #6565ff;
-      --primaryGlow: rgba(101,101,255,0.38); /* 연보라 그림자 */
+
+      /* ✅ 보라 효과(글로우) 범위 줄인 버전 */
+      --primaryGlow: rgba(101,101,255,0.26);
     }
 
     html, body { margin:0; padding:0; }
@@ -27,8 +29,6 @@
     .wrap {
       max-width: 768px;
       margin: 0 auto;
-
-      /* 하단 고정 UI가 콘텐츠를 가리지 않도록 여유 공간(버튼 두께 증가 반영) */
       padding-bottom: calc(160px + env(safe-area-inset-bottom));
     }
     img {
@@ -43,7 +43,7 @@
     ::-webkit-scrollbar { width: 0; height: 0; }
     html { scroll-behavior: smooth; }
 
-    /* ===== 하단 고정 UI 전체 영역(가운데 정렬 + 최대폭 제한) ===== */
+    /* ===== 하단 고정 UI 전체 영역 ===== */
     .fixed-area{
       position: fixed;
       left: 50%;
@@ -52,18 +52,17 @@
       width: calc(100% - (var(--sideGap) * 2));
       max-width: var(--maxW);
       z-index: 9999;
-
       pointer-events: none;
     }
     .fixed-area a{ pointer-events: auto; }
 
-    /* ===== 메인 플로팅 버튼 (두께↑ + 연보라 글로우) ===== */
+    /* ===== 메인 플로팅 버튼(글로우 범위 축소) ===== */
     .floating-btn {
       display:block;
       width: 100%;
       background: var(--primary);
       color: #fff;
-      padding: 20px 0;            /* 기존 15px -> 20px */
+      padding: 20px 0;
       text-align: center;
       border-radius: 14px;
       font-size: 18px;
@@ -71,44 +70,46 @@
       text-decoration: none;
       letter-spacing: -0.2px;
 
-      /* 연보라 그림자 + 기존 그림자 */
+      /* ✅ 보라 그림자(범위/번짐 줄임) */
       box-shadow:
-        0 14px 34px var(--primaryGlow),
-        0 8px 22px rgba(0,0,0,0.18);
+        0 10px 20px var(--primaryGlow),
+        0 8px 18px rgba(0,0,0,0.16);
     }
     .floating-btn:active { opacity: 0.86; }
 
-    /* ===== 세로 알약 퀵버튼 (세로로 더 긴 밸런스) ===== */
+    /* ===== 세로 알약 퀵버튼 (알약 크기 고정) ===== */
     .quick-pill{
       position:absolute;
       right: 0;
       bottom: calc(var(--mainBtnH) + 14px);
-      width: 74px;                 /* 약간 슬림하게 */
+      width: 74px;                 /* ✅ 고정 */
       border-radius: 999px;
       background:#fff;
       overflow:hidden;
       border: 1px solid rgba(0,0,0,0.06);
 
-      /* 연보라 그림자 + 기본 그림자 */
+      /* ✅ 보라 느낌은 남기되 범위 줄임 */
       box-shadow:
-        0 14px 30px rgba(101,101,255,0.22),
-        0 10px 26px rgba(0,0,0,0.14);
+        0 10px 18px rgba(101,101,255,0.16),
+        0 8px 18px rgba(0,0,0,0.12);
     }
 
+    /* ✅ 텍스트/아이콘 크기 키움(알약 자체는 그대로) */
     .quick-item{
       display:flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 7px;
-      padding: 14px 8px;          /* 세로 길이감↑ */
+      gap: 8px;                    /* 약간 여유 */
+      padding: 14px 8px;           /* 알약 크기 유지 전제(라인수 늘지 않게) */
       text-decoration:none;
       color:#111;
-      font-size: 11px;
-      font-weight: 800;
+      font-size: 12px;             /* 11px -> 12px */
+      font-weight: 900;
       letter-spacing: -0.2px;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
+      line-height: 1.05;
     }
     .quick-item:active{ opacity: 0.86; }
     .quick-item + .quick-item{
@@ -116,19 +117,19 @@
     }
 
     .quick-icon{
-      width: 30px;                 /* 아이콘 살짝 키워 균형 */
-      height: 30px;
+      width: 32px;                 /* 30px -> 32px */
+      height: 32px;                /* 30px -> 32px */
       border-radius: 50%;
       display:grid;
       place-items:center;
       flex: none;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.10);
     }
     .quick-icon.kakao{ background:#FEE500; }
     .quick-icon.call{ background:#21C65A; }
     .quick-icon svg{
-      width: 18px;
-      height: 18px;
+      width: 20px;                 /* 18px -> 20px */
+      height: 20px;                /* 18px -> 20px */
       display:block;
     }
   </style>
@@ -144,11 +145,9 @@
     />
   </main>
 
-  <!-- ===== 하단 고정 UI 묶음 ===== -->
   <div class="fixed-area">
-    <!-- 퀵버튼(세로 알약) -->
     <div class="quick-pill" aria-label="빠른 상담 버튼">
-      <!-- 카카오 상담: 새창 열기 -->
+      <!-- 카카오 상담: 새창 -->
       <a class="quick-item" href="http://pf.kakao.com/_swxiLxb" target="_blank" rel="noopener">
         <span class="quick-icon kakao" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none">
@@ -169,7 +168,6 @@
       </a>
     </div>
 
-    <!-- 메인 버튼 -->
     <a href="https://thinkpool.onelink.me/fY6D/BujaTV" class="floating-btn">부자티비 혜택 받기</a>
   </div>
 
@@ -237,4 +235,3 @@
 
 </body>
 </html>
-
