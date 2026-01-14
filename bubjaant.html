@@ -91,8 +91,18 @@
       overflow:hidden;
       border: 1px solid rgba(0,0,0,0.06);
 
-      /* 메인 버튼과 톤 맞춰 보라 글로우 제거/축소 → 블랙계열로 정리 */
       box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+
+      /* ✅ 스크롤 방향에 따라 숨김/표시 애니메이션 */
+      transition: transform 180ms ease, opacity 180ms ease;
+      will-change: transform, opacity;
+    }
+
+    /* ✅ 다운스크롤 시: 아래로 “반대로” 빠지면서 사라짐 */
+    .quick-pill.is-hidden{
+      opacity: 0;
+      transform: translate3d(0, 18px, 0) scale(0.96);
+      pointer-events: none;
     }
 
     .quick-item{
@@ -181,6 +191,7 @@
   <script>
   (() => {
     const img = document.getElementById('hero');
+    const quickPill = document.querySelector('.quick-pill');
     if (!img) return;
 
     const MAX_SCALE_Y = 1.03;
@@ -194,8 +205,29 @@
 
     let ticking = false;
 
+    // ✅ 퀵알약: 스크롤 방향 감지용
+    let lastScrollTop = window.scrollY || window.pageYOffset;
+    let pillHidden = false;
+    const DIR_DELTA = 6;     // 이 값보다 작은 흔들림은 무시
+    const TOP_ALWAYS_SHOW = 8;
+
+    function setPillVisible(visible){
+      if (!quickPill) return;
+      if (visible) {
+        if (!pillHidden) return;
+        quickPill.classList.remove('is-hidden');
+        pillHidden = false;
+      } else {
+        if (pillHidden) return;
+        quickPill.classList.add('is-hidden');
+        pillHidden = true;
+      }
+    }
+
     function onScroll() {
-      if (!baseHeight) return;
+      if (!baseHeight && img.complete) {
+        baseHeight = img.naturalHeight / (img.naturalWidth / img.offsetWidth);
+      }
       if (ticking) return;
       ticking = true;
 
@@ -205,17 +237,32 @@
         const docHeight = doc.scrollHeight;
         const winHeight = window.innerHeight;
 
-        const progress = (scrollTop + winHeight) / docHeight;
+        // ===== (기존) 이미지 하단 늘림 =====
+        if (baseHeight) {
+          const progress = (scrollTop + winHeight) / docHeight;
 
-        if (progress >= TRIGGER_START) {
-          const t = Math.min(1, (progress - TRIGGER_START) / (1 - TRIGGER_START));
-          const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
-          const scaleY = 1 + (MAX_SCALE_Y - 1) * eased;
-          img.style.height = (baseHeight * scaleY) + "px";
-        } else {
-          img.style.height = baseHeight + "px";
+          if (progress >= TRIGGER_START) {
+            const t = Math.min(1, (progress - TRIGGER_START) / (1 - TRIGGER_START));
+            const eased = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2;
+            const scaleY = 1 + (MAX_SCALE_Y - 1) * eased;
+            img.style.height = (baseHeight * scaleY) + "px";
+          } else {
+            img.style.height = baseHeight + "px";
+          }
         }
 
+        // ===== ✅ (추가) 퀵알약: 다운스크롤 숨김 / 업스크롤 표시 =====
+        const diff = scrollTop - lastScrollTop;
+
+        if (scrollTop <= TOP_ALWAYS_SHOW) {
+          setPillVisible(true);
+        } else if (Math.abs(diff) >= DIR_DELTA) {
+          // diff > 0 : down  -> hide
+          // diff < 0 : up    -> show
+          setPillVisible(diff < 0);
+        }
+
+        lastScrollTop = scrollTop;
         ticking = false;
       });
     }
