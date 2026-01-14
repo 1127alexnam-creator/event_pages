@@ -25,7 +25,7 @@
       text-rendering:optimizeLegibility;
     }
 
-    /* ✅ 이미지 하단 공백 없애기: padding-bottom 제거 */
+    /* ✅ 이미지 하단 공백 없애기 */
     .wrap {
       max-width: 768px;
       margin: 0 auto;
@@ -49,7 +49,7 @@
       position: fixed;
       left: 50%;
       transform: translateX(-50%);
-      bottom: calc(20px + env(safe-area-inset-bottom)); /* 레퍼런스 bottom:20px */
+      bottom: calc(20px + env(safe-area-inset-bottom));
       width: calc(100% - (var(--sideGap) * 2));
       max-width: var(--maxW);
       z-index: 9999;
@@ -69,13 +69,12 @@
       color: #fff;
 
       text-align: center;
-      border-radius: 12px;      /* 레퍼런스 12px */
+      border-radius: 12px;
       font-size: 18px;
-      font-weight: 700;         /* 레퍼런스 700 */
+      font-weight: 700;
       text-decoration: none;
       letter-spacing: -0.2px;
 
-      /* 레퍼런스 shadow */
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
     .floating-btn:active { opacity: 0.85; }
@@ -85,24 +84,27 @@
       position:absolute;
       right: 0;
       bottom: calc(var(--mainBtnH) + 14px);
-      width: 74px; /* 고정 */
+      width: 74px;
       border-radius: 999px;
       background:#fff;
       overflow:hidden;
       border: 1px solid rgba(0,0,0,0.06);
-
       box-shadow: 0 6px 18px rgba(0,0,0,0.14);
 
-      /* ✅ 스크롤 방향에 따라 숨김/표시 애니메이션 */
-      transition: transform 180ms ease, opacity 180ms ease;
+      /* ✅ 더 부드럽고 느리게 */
+      transition:
+        transform 360ms cubic-bezier(.2,.8,.2,1),
+        opacity 360ms cubic-bezier(.2,.8,.2,1);
+      transition-delay: 0ms; /* 표시할 때는 딜레이 없음 */
       will-change: transform, opacity;
     }
 
-    /* ✅ 다운스크롤 시: 아래로 “반대로” 빠지면서 사라짐 */
+    /* ✅ 다운스크롤 시: 아래로 천천히 빠지며 사라짐(딜레이 포함) */
     .quick-pill.is-hidden{
       opacity: 0;
-      transform: translate3d(0, 18px, 0) scale(0.96);
+      transform: translate3d(0, 24px, 0) scale(0.965);
       pointer-events: none;
+      transition-delay: 120ms; /* 숨길 때만 살짝 늦게 반응 */
     }
 
     .quick-item{
@@ -205,14 +207,22 @@
 
     let ticking = false;
 
-    // ✅ 퀵알약: 스크롤 방향 감지용
+    // ===== ✅ 퀵알약: 스크롤 방향 감지(누적 기준) =====
     let lastScrollTop = window.scrollY || window.pageYOffset;
     let pillHidden = false;
-    const DIR_DELTA = 6;     // 이 값보다 작은 흔들림은 무시
+
+    const DIR_DELTA = 4;         // 작은 흔들림 무시
     const TOP_ALWAYS_SHOW = 8;
+
+    const HIDE_AFTER = 80;       // 아래로 총 80px 이상 내려야 숨김
+    const SHOW_AFTER = 18;       // 위로 18px 올리면 표시
+
+    let downAcc = 0;
+    let upAcc = 0;
 
     function setPillVisible(visible){
       if (!quickPill) return;
+
       if (visible) {
         if (!pillHidden) return;
         quickPill.classList.remove('is-hidden');
@@ -225,9 +235,11 @@
     }
 
     function onScroll() {
+      // 이미지가 이미 로드된 경우(타이밍 이슈 방지)
       if (!baseHeight && img.complete) {
         baseHeight = img.naturalHeight / (img.naturalWidth / img.offsetWidth);
       }
+
       if (ticking) return;
       ticking = true;
 
@@ -251,15 +263,24 @@
           }
         }
 
-        // ===== ✅ (추가) 퀵알약: 다운스크롤 숨김 / 업스크롤 표시 =====
+        // ===== ✅ (추가) 퀵알약: 다운스크롤 숨김 / 업스크롤 표시(누적 기준) =====
         const diff = scrollTop - lastScrollTop;
 
         if (scrollTop <= TOP_ALWAYS_SHOW) {
           setPillVisible(true);
+          downAcc = 0; upAcc = 0;
         } else if (Math.abs(diff) >= DIR_DELTA) {
-          // diff > 0 : down  -> hide
-          // diff < 0 : up    -> show
-          setPillVisible(diff < 0);
+          if (diff > 0) {
+            // down
+            downAcc += diff;
+            upAcc = 0;
+            if (downAcc >= HIDE_AFTER) setPillVisible(false);
+          } else {
+            // up
+            upAcc += (-diff);
+            downAcc = 0;
+            if (upAcc >= SHOW_AFTER) setPillVisible(true);
+          }
         }
 
         lastScrollTop = scrollTop;
@@ -289,3 +310,4 @@
 
 </body>
 </html>
+
