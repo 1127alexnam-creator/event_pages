@@ -16,7 +16,9 @@
       --mainBtnH: 56px;
 
       --primary: #6565ff;
-      --disabled: #cfcfd6; /* ✅ 비활성 회색 */
+
+      /* ✅ 비활성 더 어두운 회색 */
+      --disabled: #a9a9b3;
     }
 
     html, body { margin:0; padding:0; }
@@ -56,11 +58,9 @@
       z-index: 9999;
       pointer-events: none;
     }
-    /* ✅ 버튼 클릭 영역 활성화 (퀵메뉴 제거했으니 버튼만) */
-    .fixed-area a,
-    .fixed-area button{
-      pointer-events: auto;
-    }
+
+    /* ✅ 버튼 클릭 가능 */
+    .fixed-area button{ pointer-events: auto; }
 
     /* ===== 메인 버튼 ===== */
     .floating-btn {
@@ -87,7 +87,7 @@
     }
     .floating-btn:active { opacity: 0.88; }
 
-    /* ✅ 비활성화 스타일 */
+    /* ✅ 비활성화 스타일(보이기만 비활성) */
     .floating-btn.is-disabled{
       background: var(--disabled);
       color: rgba(255,255,255,0.95);
@@ -113,11 +113,11 @@
 
   <div class="fixed-area">
     <!-- ✅ 퀵메뉴 제거 완료 -->
-    <!-- ✅ 메인 버튼 회색 비활성 + 텍스트 변경 -->
+    <!-- ✅ 회색 비활성 UI + 클릭하면 alert는 동작 -->
     <button
+      id="mainActionBtn"
       type="button"
       class="floating-btn is-disabled"
-      disabled
       aria-disabled="true"
     >
       종료된 이벤트
@@ -127,6 +127,17 @@
   <script>
   (() => {
     const img = document.getElementById('hero');
+    const mainActionBtn = document.getElementById('mainActionBtn');
+
+    // ✅ 버튼 클릭 시 alert 유지
+    if (mainActionBtn) {
+      mainActionBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        alert('종료된 이벤트입니다.');
+      });
+    }
+
     if (!img) return;
 
     const MAX_SCALE_Y = 1.03;
@@ -181,4 +192,5 @@
 
 </body>
 </html>
+
 
