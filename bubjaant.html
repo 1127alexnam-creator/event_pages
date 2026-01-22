@@ -16,6 +16,7 @@
       --mainBtnH: 56px;
 
       --primary: #6565ff;
+      --disabled: #cfcfd6; /* ✅ 비활성 회색 */
     }
 
     html, body { margin:0; padding:0; }
@@ -55,9 +56,13 @@
       z-index: 9999;
       pointer-events: none;
     }
-    .fixed-area a{ pointer-events: auto; }
+    /* ✅ 버튼 클릭 영역 활성화 (퀵메뉴 제거했으니 버튼만) */
+    .fixed-area a,
+    .fixed-area button{
+      pointer-events: auto;
+    }
 
-    /* ===== 메인 플로팅 버튼 (레퍼런스 스타일) ===== */
+    /* ===== 메인 버튼 ===== */
     .floating-btn {
       display:flex;
       align-items:center;
@@ -71,84 +76,28 @@
       text-align: center;
       border-radius: 12px;
       font-size: 18px;
-      font-weight: 700;
-      text-decoration: none;
+      font-weight: 800;
       letter-spacing: -0.2px;
+
+      border: 0;
+      cursor: pointer;
 
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    }
-    .floating-btn:active { opacity: 0.85; }
-
-    /* ===== 세로 알약 퀵버튼 (크기 고정) ===== */
-    .quick-pill{
-      position:absolute;
-      right: 0;
-      bottom: calc(var(--mainBtnH) + 14px);
-      width: 74px;
-      border-radius: 999px;
-      background:#fff;
-      overflow:hidden;
-      border: 1px solid rgba(0,0,0,0.06);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.14);
-
-      /* ✅ 더 부드럽고 느리게 */
-      transition:
-        transform 360ms cubic-bezier(.2,.8,.2,1),
-        opacity 360ms cubic-bezier(.2,.8,.2,1);
-      transition-delay: 0ms; /* 표시할 때는 딜레이 없음 */
-      will-change: transform, opacity;
-    }
-
-    /* ✅ 다운스크롤 시: 아래로 천천히 빠지며 사라짐(딜레이 포함) */
-    .quick-pill.is-hidden{
-      opacity: 0;
-      transform: translate3d(0, 24px, 0) scale(0.965);
-      pointer-events: none;
-      transition-delay: 120ms; /* 숨길 때만 살짝 늦게 반응 */
-    }
-
-    .quick-item{
-      display:flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px 8px;
-      text-decoration:none;
-      color:#111;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: -0.2px;
-      white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
-      line-height: 1.05;
     }
-    .quick-item:active{ opacity: 0.86; }
-    .quick-item + .quick-item{
-      border-top: 1px solid rgba(0,0,0,0.06);
-    }
+    .floating-btn:active { opacity: 0.88; }
 
-    /* ✅ 퀵버튼 자체 크기는 고정, 아이콘 "영역"만 1.5배 확대 */
-    .quick-icon{
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display:grid;
-      place-items:center;
-      flex: none;
-      box-shadow: 0 5px 12px rgba(0,0,0,0.10);
+    /* ✅ 비활성화 스타일 */
+    .floating-btn.is-disabled{
+      background: var(--disabled);
+      color: rgba(255,255,255,0.95);
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 1;
     }
-    .quick-icon.kakao{ background:#FEE500; }
-    .quick-icon.call{ background:#21C65A; }
-
-    .quick-icon svg{
-      width: 30px;
-      height: 30px;
-      display:block;
+    .floating-btn.is-disabled:active{
+      opacity: 1;
     }
-
-    /* 전화 SVG 미세 중앙 보정(필요시) */
-    .quick-icon.call svg{ transform: translateY(0.5px); }
   </style>
 </head>
 <body>
@@ -163,45 +112,21 @@
   </main>
 
   <div class="fixed-area">
-    <div class="quick-pill" aria-label="빠른 상담 버튼">
-      <!-- 카카오 상담: 새창 -->
-      <a class="quick-item" href="https://pf.kakao.com/_swxiLxb/chat" target="_blank" rel="noopener">
-        <span class="quick-icon kakao" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M12 4.2c-4.6 0-8.3 2.9-8.3 6.5 0 2.3 1.5 4.3 3.8 5.4l-.8 3.2c-.1.4.3.8.7.6l3.8-2.1c.3 0 .5.1.8.1 4.6 0 8.3-2.9 8.3-6.5S16.6 4.2 12 4.2Z" fill="#111"/>
-          </svg>
-        </span>
-        <span>카톡상담</span>
-      </a>
-    </div>
-
-    <!-- ✅ 메인 버튼: 클릭 시 이동 막고 alert 띄우기 -->
-    <a
-      id="mainActionBtn"
-      href="https://thinkpool.onelink.me/fY6D/BujaTV"
-      class="floating-btn"
-      target="_blank"
-      rel="noopener"
+    <!-- ✅ 퀵메뉴 제거 완료 -->
+    <!-- ✅ 메인 버튼 회색 비활성 + 텍스트 변경 -->
+    <button
+      type="button"
+      class="floating-btn is-disabled"
+      disabled
+      aria-disabled="true"
     >
-      부자티비 혜택 받기
-    </a>
+      종료된 이벤트
+    </button>
   </div>
 
   <script>
   (() => {
     const img = document.getElementById('hero');
-    const quickPill = document.querySelector('.quick-pill');
-    const mainActionBtn = document.getElementById('mainActionBtn');
-
-    // ✅ 보라색 메인 버튼 클릭 시: 원링크 이동 막고 알럿
-    if (mainActionBtn) {
-      mainActionBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        alert('종료된 이벤트입니다.');
-      });
-    }
-
     if (!img) return;
 
     const MAX_SCALE_Y = 1.03;
@@ -214,33 +139,6 @@
     });
 
     let ticking = false;
-
-    // ===== ✅ 퀵알약: 스크롤 방향 감지(누적 기준) =====
-    let lastScrollTop = window.scrollY || window.pageYOffset;
-    let pillHidden = false;
-
-    const DIR_DELTA = 4;         // 작은 흔들림 무시
-    const TOP_ALWAYS_SHOW = 8;
-
-    const HIDE_AFTER = 80;       // 아래로 총 80px 이상 내려야 숨김
-    const SHOW_AFTER = 18;       // 위로 18px 올리면 표시
-
-    let downAcc = 0;
-    let upAcc = 0;
-
-    function setPillVisible(visible){
-      if (!quickPill) return;
-
-      if (visible) {
-        if (!pillHidden) return;
-        quickPill.classList.remove('is-hidden');
-        pillHidden = false;
-      } else {
-        if (pillHidden) return;
-        quickPill.classList.add('is-hidden');
-        pillHidden = true;
-      }
-    }
 
     function onScroll() {
       // 이미지가 이미 로드된 경우(타이밍 이슈 방지)
@@ -257,7 +155,7 @@
         const docHeight = doc.scrollHeight;
         const winHeight = window.innerHeight;
 
-        // ===== (기존) 이미지 하단 늘림 =====
+        // ===== 이미지 하단 살짝 늘림 =====
         if (baseHeight) {
           const progress = (scrollTop + winHeight) / docHeight;
 
@@ -271,27 +169,6 @@
           }
         }
 
-        // ===== ✅ (추가) 퀵알약: 다운스크롤 숨김 / 업스크롤 표시(누적 기준) =====
-        const diff = scrollTop - lastScrollTop;
-
-        if (scrollTop <= TOP_ALWAYS_SHOW) {
-          setPillVisible(true);
-          downAcc = 0; upAcc = 0;
-        } else if (Math.abs(diff) >= DIR_DELTA) {
-          if (diff > 0) {
-            // down
-            downAcc += diff;
-            upAcc = 0;
-            if (downAcc >= HIDE_AFTER) setPillVisible(false);
-          } else {
-            // up
-            upAcc += (-diff);
-            downAcc = 0;
-            if (upAcc >= SHOW_AFTER) setPillVisible(true);
-          }
-        }
-
-        lastScrollTop = scrollTop;
         ticking = false;
       });
     }
@@ -305,6 +182,3 @@
 </body>
 </html>
 
-
-</body>
-</html>
